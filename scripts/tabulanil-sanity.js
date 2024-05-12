@@ -15,6 +15,7 @@ class TabulanilSanity {
   static FLAGS = {
     SANITY_POOL: "totalSanity",
     CURRENT_SANITY: "currSanity",
+    INSANITY_TIER: "insanityTier",
   }
   
   /**
@@ -70,6 +71,55 @@ class TabulanilSanityData {
     if (relatedActor !== undefined) {
       return relatedActor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
     }
+  }
+
+  /**
+  * Updates the insanity tier for a specified actor.
+  *
+  * @param {string} actorId - The unique identifier for the actor whose insanity tier we want to update
+  * @returns {Promise} A Promise that resolves when the actor's Insanity Tier flag is updated.
+  */
+  static updateCurrentInsanityTierForActor(actorId) {
+    const relatedActor = game.actors.get(actorId);
+    if (relatedActor !== undefined) {
+      const currSan = relatedActor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
+      const totalSan = relatedActor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
+      const sanityTier = this.calcSanityTier(totalSan, [0.8, 0.6, 0.4, 0.2, 0.1, 0.0], currSan);
+      TabulanilSanity.log(false, `Current Insanity Tier for actor ${relatedActor.name}[${actorId}]: ${sanityTier}`);
+      return relatedActor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER, sanityTier);
+    }
+  }
+
+  /**
+   * Calculates the sanity tier based on the provided base value, a lost of coefficients and the current value.
+   * The function determines the highest applicable tier where the current value is greater then or equal the
+   * base value multiplied by the coefficient of that tier. It returns the tier number starting from 1.
+   * If the current value is greater than the first tier or equal to the base value, returns 0.
+   *
+   * @param {number} baseVal - The base value for sanity calculation.
+   * @param {Array<number>} coef - An array of coefficients used to determine tier thresholds for sanity.
+   * @param {number} currVal - The current sanity value to be compared.
+   * @returns {number} The 1-based index of the highest matching tier or 0 if no tier is valid
+   */
+  static calcSanityTier(baseVal, coef, currVal) {
+    // IF the current value is same as base value, imply no tier was found
+    if (baseVal === currVal) {
+      return 0;
+    }
+    // Define a safe default for current tier and iterate of the coefficients
+    let currTier = 0;
+    for (let i = 0; i < coef.length; i++) {
+      // Calculate the threshold for this tier
+      const tierVal = Math.floor(baseVal * coef[i])
+      // if the current value is greater than the current tier threhold, break out of the loop
+      if (currVal > tierVal) {
+        break;
+      }
+      // Update the current matching tier
+      currTier = i + 1;
+    }
+    // Return the tier found, or 0 if no matching tier was found.
+    return currTier;
   }
 }
 
