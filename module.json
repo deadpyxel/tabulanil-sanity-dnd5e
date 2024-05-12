@@ -1,0 +1,12 @@
+{
+  "name": "tabulanil-sanity-system-5e",
+  "title": "Tabulanil' Sanity System for 5e",
+  "description": "A simple set of homebrew rules for using sanity in your games",
+  "authors": [
+    {
+      "name": "deadpyxel"
+    }
+  ],
+  "version": "0.0.1",
+  "compatibility": {"minimum": "11", "verified": "11"}
+}
