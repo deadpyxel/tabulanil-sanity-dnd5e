@@ -4,9 +4,11 @@
   "description": "a simple set of homebrew rules for using sanity in your games",
   "authors": [
     {
-      "name": "deadpyxel"
+      "name": "deadpyxel",
+      "url": "https://github.com/deadpyxel"
     }
   ],
+  "url": "https://github.com/deadpyxel/tabulanil-sanity-system-5e",
   "version": "0.0.1",
   "relationships": {
     "systems": [
@@ -23,5 +25,21 @@
       }
     ]
   },
-  "compatibility": {"minimum": "11", "verified": "11"}
+  "compatibility": {
+    "minimum": "11", 
+    "verified": "11"
+  },
+  "scripts": [
+    "scripts/sanity-system.js"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "styles": [
+    "styles/sanity-system.css"
+  ]
 }
