@@ -79,5 +79,5 @@ class TabulanilSanityData {
   * This is useful for enabling or disabling debug output conditionally based on the environment.
   */
 Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
-  registerPackageDebugFlag(SanitySystem.ID);
+  registerPackageDebugFlag(TabulanilSanity.ID);
 });

@@ -30,7 +30,7 @@
     "verified": "11"
   },
   "scripts": [
-    "scripts/sanity-system.js"
+    "scripts/tabulanil-sanity.js"
   ],
   "languages": [
     {
@@ -40,6 +40,6 @@
     }
   ],
   "styles": [
-    "styles/sanity-system.css"
+    "styles/tabulanil-sanity.css"
   ]
 }
