@@ -74,6 +74,46 @@ class TabulanilSanityData {
   }
 
   /**
+  * Gets the current Sanity points for the specified actor.
+  *
+  * @param {string} actorId - The unique identifier for the actor whose sanity we want to update
+  * @returns {number|null} The current Sanity Points of the actor if available, or null otherwise
+  */
+  static getSanityForActor(actorId) {
+    const relatedActor = game.actors.get(actorId);
+    if (relatedActor !== undefined) {
+      return relatedActor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
+    }
+    return null;
+  }
+
+  /**
+  * Gets the Total Sanity score for the specified actor.
+  *
+  * @param {string} actorId - The unique identifier for the actor whose sanity we want to update
+  * @returns {number|null} The current Total Sanity Points of the actor if available, or null otherwise
+  */
+  static getTotalSanityForActor(actorId) {
+    const relatedActor = game.actors.get(actorId);
+    if (relatedActor !== undefined) {
+      return relatedActor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
+    }
+    return null;
+  }
+  /**
+  * Gets the current insanity tier for the specified actor.
+  *
+  * @param {string} actorId - The unique identifier for the actor whose sanity we want to update
+  * @returns {number|null} The current insanity tier of the actor if available, or null otherwise
+  */
+  static getInsanityTierForActor(actorId) {
+    const relatedActor = game.actors.get(actorId);
+    if (relatedActor !== undefined) {
+      return relatedActor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER);
+    }
+    return null;
+  }
+  /**
   * Updates the insanity tier for a specified actor.
   *
   * @param {string} actorId - The unique identifier for the actor whose insanity tier we want to update
