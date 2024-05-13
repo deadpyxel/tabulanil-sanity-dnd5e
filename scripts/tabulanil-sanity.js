@@ -170,3 +170,50 @@ class TabulanilSanityData {
 Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
   registerPackageDebugFlag(TabulanilSanity.ID);
 });
+
+/**
+ * Hook that enhances the rendered actor sheet for 5e characters by adding custom sanity tracking UI.
+ * This function is triggered whenever an actor sheet is rendered in the game.
+ * It retrieves sanity-related data for the actor, calculates the sanity percentage,
+ * and injects a custom HTML block to display this information.
+ * 
+ * @param {Object} app - The application object representing the actor sheet.
+ * @param {HTMLElement[]} html - The HTML element array of the actor sheet.
+ * @param {Object} data - The data object associated with the actor.
+ */
+Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
+  TabulanilSanity.log(false, `Opened actor sheet for ${app.document.name}`);
+  const actorId = app.document.id;
+
+  const totalSanity = TabulanilSanityData.getTotalSanityForActor(actorId);
+  const currSanity = TabulanilSanityData.getSanityForActor(actorId);
+  const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actorId);
+  if (totalSanity <= 0) {
+    return;
+  }
+  const sanPerc = currSanity / totalSanity * 100; 
+
+  const sanityUI = `<div class="meter-group">
+      <div class="label roboto-condensed-upper">
+        <span>Sanity Points</span>
+      </div>
+      <div class="meter sectioned hit-points">
+        <div class="progress hit-points" role="meter" aria-valuemin="0" aria-valuenow="${currSanity}" aria-valuemax="${totalSanity}" style="--bar-percentage: ${sanPerc}%">
+          <div class="label">
+            <span class="value">${currSanity}</span>
+            <span class="separator">/</span>
+            <span class="max">${totalSanity}</span>
+          </div>
+          <input type="text" name="tabulanil.sanity.value" data-dtype="Number" placeholder="0" value="0" hidden="">
+        </div>
+        <div class="tmp">
+          <input type="text" name="tabulanil.sanity.tier" data-dtype="Number" placeholder="TMP" value="${currInsanityTier}">
+        </div>
+      </div>
+    </div>`
+
+  const actorSheetLocation = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actorId} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(4)`);
+  if (actorSheetLocation) {
+    actorSheetLocation.insertAdjacentHTML("afterend", sanityUI);
+  }
+});
