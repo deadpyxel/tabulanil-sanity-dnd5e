@@ -4,11 +4,11 @@
 	--tabulanil-sanity-color-3: #48548C;
 }
 
-.sanity-points {
-  background: linear-gradient(to right, var(--tabulanil-sanity-color-1) 0%, var(--tabulanil-sanity-color-2) 100%);
-  border-right: var(--border-width) solid var(--tabulanil-sanity-color-3);
+.sanity-points::before {
+  background: linear-gradient(to right, var(--tabulanil-sanity-color-1) 0%, var(--tabulanil-sanity-color-2) 100%) !important;
+  border-right: var(--border-width) solid var(--tabulanil-sanity-color-3) !important;
 }
 
-.sanity-tier {
-  color: var(--tabulanil-sanity-color-2);
+.sanity-tier > * {
+  color: var(--tabulanil-sanity-color-2) !important;
 }
