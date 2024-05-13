@@ -17,7 +17,7 @@ class TabulanilSanity {
     CURRENT_SANITY: "currSanity",
     INSANITY_TIER: "insanityTier",
   }
-  
+
   /**
   * Paths to the Handlebars tempalte files used
   * @type {Object}
@@ -31,7 +31,7 @@ class TabulanilSanity {
   * @param {boolean} force - Force the function to log regardless of the debug settings
   * @param {...any} args - Additional arguments to log.
   */
-  static log(force, ...args) {  
+  static log(force, ...args) {
     const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
 
     if (shouldLog) {
@@ -149,7 +149,7 @@ Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
  * This function is triggered whenever an actor sheet is rendered in the game.
  * It retrieves sanity-related data for the actor, calculates the sanity percentage,
  * and injects a custom HTML block to display this information.
- * 
+ *
  * @param {Object} app - The application object representing the actor sheet.
  * @param {HTMLElement[]} html - The HTML element array of the actor sheet.
  * @param {Object} data - The data object associated with the actor.
@@ -164,7 +164,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   if (totalSanity <= 0) {
     return;
   }
-  const sanPerc = currSanity / totalSanity * 100; 
+  const sanPerc = currSanity / totalSanity * 100;
 
   const sanityUI = `<div class="meter-group">
       <div class="label roboto-condensed-upper">
@@ -180,7 +180,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
           <input type="text" name="tabulanil.sanity.value" data-dtype="Number" placeholder="0" value="0" hidden="">
         </div>
         <div class="tmp sanity-tier">
-          <input type="text" name="tabulanil.sanity.tier" data-dtype="Number" placeholder="TMP" value="${currInsanityTier}">
+          <input type="text" name="flags.tabulanil.sanity.tier" data-dtype="Number" placeholder="TMP" value="${currInsanityTier}">
         </div>
       </div>
     </div>`
