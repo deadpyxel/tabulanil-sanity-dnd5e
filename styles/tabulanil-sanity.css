@@ -1,0 +1,14 @@
+:root {
+	--tabulanil-sanity-color-1: #757575;
+	--tabulanil-sanity-color-2: #5F5C8F;
+	--tabulanil-sanity-color-3: #48548C;
+}
+
+.sanity-points {
+  background: linear-gradient(to right, var(--tabulanil-sanity-color-1) 0%, var(--tabulanil-sanity-color-2) 100%);
+  border-right: var(--border-width) solid var(--tabulanil-sanity-color-3);
+}
+
+.sanity-tier {
+  color: var(--tabulanil-sanity-color-2);
+}

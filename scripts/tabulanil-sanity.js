@@ -170,8 +170,8 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
       <div class="label roboto-condensed-upper">
         <span>Sanity Points</span>
       </div>
-      <div class="meter sectioned hit-points">
-        <div class="progress hit-points" role="meter" aria-valuemin="0" aria-valuenow="${currSanity}" aria-valuemax="${totalSanity}" style="--bar-percentage: ${sanPerc}%">
+      <div class="meter sectioned hit-points sanity-points">
+        <div class="progress hit-points sanity-points" role="meter" aria-valuemin="0" aria-valuenow="${currSanity}" aria-valuemax="${totalSanity}" style="--bar-percentage: ${sanPerc}%">
           <div class="label">
             <span class="value">${currSanity}</span>
             <span class="separator">/</span>
