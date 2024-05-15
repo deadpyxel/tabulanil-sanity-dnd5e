@@ -48,11 +48,16 @@ class TabulanilSanityData {
   * Calculates the total sanity points for a specified Actor based on their mental ability scores.
   *
   * @param {Actor} actor - The actor whose sanity total we want to calculate
+  * @param {Object} [extraData={}] - Optional object containing updated ability scores.
   * @returns {Promise} A Promise that resolves when the actor's Sanity flag is updated.
   */
-  static calcTotalSanityForActor(actor) {
+  static calcTotalSanityForActor(actor, extraData = {}) {
     const actorAbilities = actor.system.abilities
-    const totalSanity = (actorAbilities.cha.value + actorAbilities.int.value + actorAbilities.wis.value) * 2
+    // For each of the mental attributes, use the new data if it exists, else fetch the actor's current value
+    const chaValue = extraData.system?.abilities?.cha?.value || actorAbilities.cha.value;
+    const intValue = extraData.system?.abilities?.int?.value || actorAbilities.int.value;
+    const wisValue = extraData.system?.abilities?.wis?.value || actorAbilities.wis.value;
+    const totalSanity = (chaValue + intValue + wisValue) * 2
     return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL, totalSanity);
   }
 
@@ -105,7 +110,7 @@ class TabulanilSanityData {
       const currSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
       const totalSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
       const sanityTier = this.calcSanityTier(totalSan, [0.8, 0.6, 0.4, 0.2, 0.1, 0.0], currSan);
-      TabulanilSanity.log(false, `Current Insanity Tier for actor ${actor.name}[${actor}]: ${sanityTier}`);
+      TabulanilSanity.log(false, `Current Insanity Tier for actor ${actor.name}[${actor.id}]: ${sanityTier}`);
       return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER, sanityTier);
   }
 
@@ -177,10 +182,10 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
             <span class="separator">/</span>
             <span class="max">${totalSanity}</span>
           </div>
-          <input type="text" name="tabulanil.sanity.value" data-dtype="Number" placeholder="0" value="0" hidden="">
+          <input type="text" name="flags.tabulanil-sanity-dnd5e.currSanity" data-dtype="Number" placeholder="0" value="0" hidden="">
         </div>
         <div class="tmp sanity-tier">
-          <input type="text" name="flags.tabulanil.sanity.tier" data-dtype="Number" placeholder="TMP" value="${currInsanityTier}">
+          <input type="text" name="flags.tabulanil-sanity-dnd5e.insanityTier" data-dtype="Number" placeholder="TIER" value="${currInsanityTier}" readonly>
         </div>
       </div>
     </div>`
@@ -190,3 +195,19 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
     actorSheetLocation.insertAdjacentHTML("afterend", sanityUI);
   }
 });
+
+
+Hooks.on("preUpdateActor", (actor, data, info, id) => {
+  if (data.system?.abilities?.int || data.system?.abilities?.wis || data.system?.abilities?.cha) {
+    TabulanilSanity.log(false, "Mental attributes changed, updating data flags");
+    TabulanilSanityData.calcTotalSanityForActor(actor, data);
+    TabulanilSanityData.updateCurrentInsanityTierForActor(actor);
+  }
+});
+
+// Hooks.on("preCreateActor", (actor, actorMeta, actorOps, id) => {
+//   TabulanilSanity.log(false, "New Actor created, populating flags");
+//   TabulanilSanityData.calcTotalSanityForActor(actor);
+//   TabulanilSanityData.updateCurrentInsanityTierForActor(actor);
+//   TabulanilSanityData.updateSanityForActor(actor, TabulanilSanityData.getTotalSanityForActor(actor));
+// });
