@@ -173,7 +173,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
 
   const insanityTierName = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.shortName`);
   const insanityTierFlavour = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.flavourText`);
-  const tooltipRich = `<section class='dnd5e2 content'>
+  const tooltipRich = `<section class='dnd5e2 content tabulanil-tooltip tabulanil-rule-tooltip'>
     <section class='header'>
         <h2>${insanityTierName}</h2>
         <ul class='pills'>
@@ -194,10 +194,10 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
             <span class="separator">/</span>
             <span class="max">${totalSanity}</span>
           </div>
-          <input type="text" name="flags.tabulanil-sanity-dnd5e.currSanity" data-dtype="Number" placeholder="0" value="0" hidden="">
+          <input type="text" name="flags.tabulanil-sanity-dnd5e.currSanity" data-dtype="Number" placeholder="0" value="${currSanity}" hidden="">
         </div>
-        <div class="tmp sanity-tier">
-          <span data-tooltip="${tooltipRich}">${currInsanityTier}</span>
+        <div class="tmp sanity-tier" data-tooltip="${tooltipRich}">
+          <span>${currInsanityTier}</span>
         </div>
       </div>
     </div>`
