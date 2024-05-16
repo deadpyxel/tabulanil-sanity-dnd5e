@@ -44,6 +44,11 @@ class TabulanilSanity {
   * Class responsible for managing sanity data computations for Actors
   */
 class TabulanilSanityData {
+
+
+  static _calcTotalSanity(charisma, intelligence, wisdom) {
+    return (charisma + intelligence + wisdom) * 2
+  }
   /**
   * Calculates the total sanity points for a specified Actor based on their mental ability scores.
   *
@@ -57,7 +62,7 @@ class TabulanilSanityData {
     const chaValue = extraData.system?.abilities?.cha?.value || actorAbilities.cha.value;
     const intValue = extraData.system?.abilities?.int?.value || actorAbilities.int.value;
     const wisValue = extraData.system?.abilities?.wis?.value || actorAbilities.wis.value;
-    const totalSanity = (chaValue + intValue + wisValue) * 2
+    const totalSanity = this._calcTotalSanity(chaValue, intValue, wisValue);
     return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL, totalSanity);
   }
 
@@ -69,6 +74,7 @@ class TabulanilSanityData {
   * @returns {Promise} A Promise that resolves when the actor's Current Sanity flag is updated.
   */
   static updateSanityForActor(actor, value) {
+    TabulanilSanity.log(false, `Setting current sanity for actor ${actor.name} to ${value}`)
     return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
   }
 
@@ -141,6 +147,28 @@ class TabulanilSanityData {
   }
 }
 
+class TabulanilSanityConfig {
+
+  static initializeSanityValuesForActor(actor) {
+    const {cha, int, wis} = actor.system?.abilities;
+    const totalSanity = TabulanilSanityData._calcTotalSanity(cha.value, int.value, wis.value);
+
+    const actorSan = {
+      totalSanity: totalSanity,
+      currSanity: totalSanity,
+      insanityTier: 0,
+    };
+    const flagPath = `flags.${TabulanilSanity.ID}`;
+    TabulanilSanity.log(false, "module flag: ", flagPath)
+
+    TabulanilSanity.log(false, "current actor stuff: ", actorSan);
+    actor.update({"flags.tabulanil-sanity-dnd5e": actorSan});
+
+
+  }
+
+}
+
 /**
   * Registers a debug flag for the module once the developer mode is ready.
   * This is useful for enabling or disabling debug output conditionally based on the environment.
@@ -162,6 +190,11 @@ Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
 Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   const actor = app.document;
   TabulanilSanity.log(false, `Opened actor sheet for ${actor.name}`);
+
+  if (!actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL)) {
+    TabulanilSanity.log(false, `Module flags were not set for actor ${actor.name}(ID: ${actor.id})`);
+    TabulanilSanityConfig.initializeSanityValuesForActor(actor);
+  }
 
   const totalSanity = TabulanilSanityData.getTotalSanityForActor(actor);
   const currSanity = TabulanilSanityData.getSanityForActor(actor);
