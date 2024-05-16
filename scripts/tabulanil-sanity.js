@@ -150,6 +150,7 @@ class TabulanilSanityData {
 class TabulanilSanityConfig {
 
   static initializeSanityValuesForActor(actor) {
+    TabulanilSanity.log(false, "Initializing module flags")
     const {cha, int, wis} = actor.system?.abilities;
     const totalSanity = TabulanilSanityData._calcTotalSanity(cha.value, int.value, wis.value);
 
@@ -159,12 +160,8 @@ class TabulanilSanityConfig {
       insanityTier: 0,
     };
     const flagPath = `flags.${TabulanilSanity.ID}`;
-    TabulanilSanity.log(false, "module flag: ", flagPath)
 
-    TabulanilSanity.log(false, "current actor stuff: ", actorSan);
-    actor.update({"flags.tabulanil-sanity-dnd5e": actorSan});
-
-
+    actor.update({[flagPath]: actorSan});
   }
 
 }
