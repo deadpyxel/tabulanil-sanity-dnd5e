@@ -261,12 +261,12 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   }
 
   // add event listener to sanity bar
-  const sanityBar = html.querySelector("div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points");
+  const sanityBar = html.querySelector("div.progress.hit-points.sanity-points");
   sanityBar.addEventListener("click", (event) => {
     TabulanilSanity.log(false, "clicked on sanity bar:", event);
     TabulanilSanityConfig._toggleEditHP(event, true);
   });
-  const sanityBarInput = html.querySelector("div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points > input[type='text']");
+  const sanityBarInput = html.querySelector(`input[name="${currSanityFlag}"]`);
   sanityBarInput.addEventListener("blur", (event) => {
     TabulanilSanity.log(false, "focus out of input", event);
     TabulanilSanityConfig._toggleEditHP(event, false);
