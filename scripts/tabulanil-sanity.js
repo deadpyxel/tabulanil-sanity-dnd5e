@@ -45,39 +45,6 @@ class TabulanilSanity {
   */
 class TabulanilSanityData {
 
-
-  static _calcTotalSanity(charisma, intelligence, wisdom) {
-    return (charisma + intelligence + wisdom) * 2
-  }
-  /**
-  * Calculates the total sanity points for a specified Actor based on their mental ability scores.
-  *
-  * @param {Actor} actor - The actor whose sanity total we want to calculate
-  * @param {Object} [extraData={}] - Optional object containing updated ability scores.
-  * @returns {Promise} A Promise that resolves when the actor's Sanity flag is updated.
-  */
-  static calcTotalSanityForActor(actor, extraData = {}) {
-    const actorAbilities = actor.system.abilities
-    // For each of the mental attributes, use the new data if it exists, else fetch the actor's current value
-    const chaValue = extraData.system?.abilities?.cha?.value || actorAbilities.cha.value;
-    const intValue = extraData.system?.abilities?.int?.value || actorAbilities.int.value;
-    const wisValue = extraData.system?.abilities?.wis?.value || actorAbilities.wis.value;
-    const totalSanity = this._calcTotalSanity(chaValue, intValue, wisValue);
-    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL, totalSanity);
-  }
-
-  /**
-  * Updates the sanity score for a specified actor.
-  *
-  * @param {Actor} actor - The actor whose sanity total we want to update
-  * @param {number} value - The value to adjust the actor's sanity to.
-  * @returns {Promise} A Promise that resolves when the actor's Current Sanity flag is updated.
-  */
-  static updateSanityForActor(actor, value) {
-    TabulanilSanity.log(false, `Setting current sanity for actor ${actor.name} to ${value}`)
-    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
-  }
-
   /**
   * Gets the current Sanity points for the specified actor.
   *
@@ -106,6 +73,39 @@ class TabulanilSanityData {
   static getInsanityTierForActor(actor) {
     return actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER);
   }
+
+  static _calcTotalSanity(charisma, intelligence, wisdom) {
+    return (charisma + intelligence + wisdom) * 2
+  }
+  /**
+  * Calculates the total sanity points for a specified Actor based on their mental ability scores.
+  *
+  * @param {Actor} actor - The actor whose sanity total we want to calculate
+  * @param {Object} [extraData={}] - Optional object containing updated ability scores.
+  * @returns {Promise} A Promise that resolves when the actor's Sanity flag is updated.
+*/
+  static calcTotalSanityForActor(actor, extraData = {}) {
+    const actorAbilities = actor.system.abilities
+    // For each of the mental attributes, use the new data if it exists, else fetch the actor's current value
+    const chaValue = extraData.system?.abilities?.cha?.value || actorAbilities.cha.value;
+    const intValue = extraData.system?.abilities?.int?.value || actorAbilities.int.value;
+    const wisValue = extraData.system?.abilities?.wis?.value || actorAbilities.wis.value;
+    const totalSanity = this._calcTotalSanity(chaValue, intValue, wisValue);
+    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL, totalSanity);
+  }
+
+  /**
+  * Updates the sanity score for a specified actor.
+  *
+  * @param {Actor} actor - The actor whose sanity total we want to update
+  * @param {number} value - The value to adjust the actor's sanity to.
+  * @returns {Promise} A Promise that resolves when the actor's Current Sanity flag is updated.
+  */
+  static updateSanityForActor(actor, value) {
+    TabulanilSanity.log(false, `Setting current sanity for actor ${actor.name} to ${value}`)
+    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
+  }
+
   /**
   * Updates the insanity tier for a specified actor.
   *
