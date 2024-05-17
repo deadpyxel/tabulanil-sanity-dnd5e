@@ -1,13 +1,17 @@
 /* variable declaration */
 :root {
-	--tabulanil-sanity-color-1: #757575;
-	--tabulanil-sanity-color-2: #5F5C8F;
-	--tabulanil-sanity-color-3: #48548C;
+  --tabulanil-sanity-color-1: #757575;
+  --tabulanil-sanity-color-2: #5f5c8f;
+  --tabulanil-sanity-color-3: #48548c;
 }
 
 /* sanity bar styles */
 .sanity-points::before {
-  background: linear-gradient(to right, var(--tabulanil-sanity-color-1) 0%, var(--tabulanil-sanity-color-2) 100%) !important;
+  background: linear-gradient(
+    to right,
+    var(--tabulanil-sanity-color-1) 0%,
+    var(--tabulanil-sanity-color-2) 100%
+  ) !important;
   border-right: var(--border-width) solid var(--tabulanil-sanity-color-3) !important;
 }
 
@@ -31,29 +35,32 @@
 
 /* tooltip styles */
 .tabulanil-tooltip {
-   font-family: var(--dnd5e-font-roboto);
-	 font-size: var(--font-size-13);
-	 text-align: start;
-	 color: var(--color-text-dark-primary);
-	 border-radius: 5px;
-	 background: url("../../../systems/dnd5e/ui/texture-gray1.webp") no-repeat top left, url("../../../system/dnd5e/ui/texture-gray2.webp") no-repeat bottom right, var(--dnd5e-color-parchment);
-	 box-shadow: 0 0 16px var(--dnd5e-shadow-45);
-	 border: 2px solid var(--dnd5e-color-gold);
+  font-family: var(--dnd5e-font-roboto);
+  font-size: var(--font-size-13);
+  text-align: start;
+  color: var(--color-text-dark-primary);
+  border-radius: 5px;
+  background:
+    url("../../../systems/dnd5e/ui/texture-gray1.webp") no-repeat top left,
+    url("../../../system/dnd5e/ui/texture-gray2.webp") no-repeat bottom right,
+    var(--dnd5e-color-parchment);
+  box-shadow: 0 0 16px var(--dnd5e-shadow-45);
+  border: 2px solid var(--dnd5e-color-gold);
   margin: -2.5%;
   padding: 2%;
   box-sizing: border-box;
 }
 
 .tabulanil-tooltip .content {
-  padding: 0 .5rem .25rem;
+  padding: 0 0.5rem 0.25rem;
 }
 
 .tabulanil-tooltip .header h2 {
-   margin: 0;
-	 border: none;
-	 font-family: var(--dnd5e-font-roboto-slab);
-	 font-size: 1.5em;
-   font-weight: bold;
+  margin: 0;
+  border: none;
+  font-family: var(--dnd5e-font-roboto-slab);
+  font-size: 1.5em;
+  font-weight: bold;
 }
 
 .tabulanil-rule-tooltip {
@@ -62,7 +69,7 @@
 
 .tabulanil-rule-tooltip .header {
   display: flex;
-	 align-items: center;
-	 justify-content: space-between;
-	 margin-block: 6px 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 6px 10px;
 }
