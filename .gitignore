@@ -166,3 +166,6 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/node,javascript,vim
 
+
+# Module lock
+tabulanil-sanity-dnd5e.lock
