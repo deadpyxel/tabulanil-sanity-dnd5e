@@ -19,14 +19,6 @@ class TabulanilSanity {
   }
 
   /**
-  * Paths to the Handlebars tempalte files used
-  * @type {Object}
-  */
-  static TEMPLATES = {
-    SANITYSHEET: `modules/${this.ID}/templates/sanity-system.hbs`
-  }
-
-  /**
   * Logs messages to the console if the debug mode is active or logging is forced.
   * @param {boolean} force - Force the function to log regardless of the debug settings
   * @param {...any} args - Additional arguments to log.
