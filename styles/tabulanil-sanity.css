@@ -46,8 +46,8 @@
     var(--dnd5e-color-parchment);
   box-shadow: 0 0 16px var(--dnd5e-shadow-45);
   border: 2px solid var(--dnd5e-color-gold);
-  margin: -2.5%;
-  padding: 2%;
+  margin: -0.5rem;
+  padding: 0.75rem;
   box-sizing: border-box;
 }
 
