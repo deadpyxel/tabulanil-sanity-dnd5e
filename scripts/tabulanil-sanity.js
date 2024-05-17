@@ -8,6 +8,8 @@ class TabulanilSanity {
   */
   static ID = "tabulanil-sanity-dnd5e";
 
+  static flagPath = `flags.${this.ID}`;
+
   /**
   * Flags used within the module to maintain state
   * @type {Object}
@@ -66,9 +68,6 @@ class TabulanilSanityData {
     return actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER);
   }
 
-  static _calcTotalSanity(charisma, intelligence, wisdom) {
-    return (charisma + intelligence + wisdom) * 2
-  }
   /**
   * Calculates the total sanity points for a specified Actor based on their mental ability scores.
   *
@@ -82,8 +81,7 @@ class TabulanilSanityData {
     const chaValue = extraData.system?.abilities?.cha?.value || actorAbilities.cha.value;
     const intValue = extraData.system?.abilities?.int?.value || actorAbilities.int.value;
     const wisValue = extraData.system?.abilities?.wis?.value || actorAbilities.wis.value;
-    const totalSanity = this._calcTotalSanity(chaValue, intValue, wisValue);
-    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL, totalSanity);
+    return (chaValue + intValue + wisValue) * 2;
   }
 
   /**
@@ -106,36 +104,9 @@ class TabulanilSanityData {
   */
   static updateCurrentInsanityTierForActor(actor) {
     const currSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
-    const totalSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
-    const sanityTier = this.calcSanityTier(totalSan, TabulanilSanityConfig.getTierCoef(), currSan);
-    TabulanilSanity.log(false, `Current Insanity Tier for actor ${actor.name}[${actor.id}]: ${sanityTier}`);
-    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER, sanityTier);
-  }
-
-  /**
-   * Calculates the sanity tier based on the provided base value, a lost of coefficients and the current value.
-   * The function determines the highest applicable tier where the current value is greater then or equal the
-   * base value multiplied by the coefficient of that tier. It returns the tier number starting from 1.
-   * If the current value is greater than the first tier or equal to the base value, returns 0.
-   *
-   * @param {number} baseVal - The base value for sanity calculation.
-   * @param {Array<number>} coef - An array of coefficients used to determine tier thresholds for sanity.
-   * @param {number} currVal - The current sanity value to be compared.
-   * @returns {number} The 1-based index of the highest matching tier or 0 if no tier is valid
-   */
-  static calcSanityTier(baseVal, coef, currVal) {
-    if (baseVal <= 0) {
-      return 0
-    }
-    const sanPerc = currVal / baseVal
-    let currTier = 0;
-    for (let i = 0; i < coef.length; i++) {
-      if (sanPerc > coef[i]) {
-        break;
-      }
-      currTier = i + 1;
-    }
-    return currTier;
+    const totalSan = TabulanilSanityData.calcTotalSanityForActor(actor);
+    const sanPerc = currSan / totalSan;
+    return this._calcInsanityTier(sanPerc, TabulanilSanityConfig.getTierCoef());
   }
 
   static _calcInsanityTier(sanPerc, coef) {
@@ -168,8 +139,7 @@ class TabulanilSanityConfig {
 
   static initializeSanityValuesForActor(actor) {
     TabulanilSanity.log(false, "Initializing module flags")
-    const { cha, int, wis } = actor.system?.abilities;
-    const totalSanity = TabulanilSanityData._calcTotalSanity(cha.value, int.value, wis.value);
+    const totalSanity = TabulanilSanityData.calcTotalSanityForActor(actor);
 
     const actorSan = {
       totalSanity: totalSanity,
@@ -245,7 +215,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
     TabulanilSanityConfig.initializeSanityValuesForActor(actor);
   }
 
-  const totalSanity = TabulanilSanityData.getTotalSanityForActor(actor);
+  const totalSanity = TabulanilSanityData.calcTotalSanityForActor(actor);
   const currSanity = TabulanilSanityData.getSanityForActor(actor);
   const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actor);
   if (totalSanity <= 0) {
@@ -285,18 +255,18 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
       </div>
     </div>`
 
-  const actorSheetLocation = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actor.id} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(4)`);
+  const actorSheetLocation = html.querySelector("section.sheet-body > div > div > div.card > div.stats > div:nth-child(4)");
   if (actorSheetLocation) {
     actorSheetLocation.insertAdjacentHTML("afterend", sanityUI);
   }
 
   // add event listener to sanity bar
-  const sanityBar = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actor.id} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(5) > div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points`);
+  const sanityBar = html.querySelector("div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points");
   sanityBar.addEventListener("click", (event) => {
     TabulanilSanity.log(false, "clicked on sanity bar:", event);
     TabulanilSanityConfig._toggleEditHP(event, true);
   });
-  const sanityBarInput = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actor.id} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(5) > div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points > input[type=text]`);
+  const sanityBarInput = html.querySelector("div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points > input[type='text']");
   sanityBarInput.addEventListener("blur", (event) => {
     TabulanilSanity.log(false, "focus out of input", event);
     TabulanilSanityConfig._toggleEditHP(event, false);
@@ -307,12 +277,11 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
 Hooks.on("preUpdateActor", (actor, data, info, id) => {
   if (data.system?.abilities?.int || data.system?.abilities?.wis || data.system?.abilities?.cha) {
     TabulanilSanity.log(false, "Mental attributes changed, updating data flags");
+    const flagsUpdate = {
+      [TabulanilSanity.flagPath]: {}
+    }
+    TabulanilSanity.log(false, "update data", flagsUpdate);
     TabulanilSanityData.calcTotalSanityForActor(actor, data);
     TabulanilSanityData.updateCurrentInsanityTierForActor(actor);
   }
 });
-
-// Hooks.on("preCreateActor", (actor, actorMeta, actorOps, id) => {
-//   TabulanilSanity.log(false, "New Actor created, populating flags");
-//   TabulanilSanityConfig.initializeSanityValuesForActor(actor);
-// });
