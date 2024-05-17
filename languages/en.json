@@ -2,7 +2,7 @@
   "TABULANIL_SANITY": {
     "TIER_0": {
       "shortName": "Sane",
-      "flavourText": "You feel ok, your mind seens to be in good condition"
+      "flavourText": "You feel ok, your mind seens to be in good condition for now. No effects are noticeble."
     },
     "TIER_1": {
       "shortName": "Distress",
