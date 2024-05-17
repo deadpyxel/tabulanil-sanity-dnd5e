@@ -15,6 +15,14 @@
   border-right: var(--border-width) solid var(--tabulanil-sanity-color-3) !important;
 }
 
+.sanity-points > input {
+  position: relative;
+}
+
+.sanity-points >input:focus {
+  box-shadow: 0 0 8px var(--dnd5e-color-gold);
+}
+
 /* sanity tier styles */
 .sanity-tier > * {
   color: var(--tabulanil-sanity-color-2) !important;

@@ -105,11 +105,11 @@ class TabulanilSanityData {
   * @returns {Promise} A Promise that resolves when the actor's Insanity Tier flag is updated.
   */
   static updateCurrentInsanityTierForActor(actor) {
-      const currSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
-      const totalSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
-      const sanityTier = this.calcSanityTier(totalSan, [0.8, 0.6, 0.4, 0.2, 0.1, 0.0], currSan);
-      TabulanilSanity.log(false, `Current Insanity Tier for actor ${actor.name}[${actor.id}]: ${sanityTier}`);
-      return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER, sanityTier);
+    const currSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
+    const totalSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
+    const sanityTier = this.calcSanityTier(totalSan, TabulanilSanityConfig.getTierCoef(), currSan);
+    TabulanilSanity.log(false, `Current Insanity Tier for actor ${actor.name}[${actor.id}]: ${sanityTier}`);
+    return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER, sanityTier);
   }
 
   /**
@@ -127,7 +127,7 @@ class TabulanilSanityData {
     if (baseVal <= 0) {
       return 0
     }
-    const sanPerc = currVal/baseVal
+    const sanPerc = currVal / baseVal
     let currTier = 0;
     for (let i = 0; i < coef.length; i++) {
       if (sanPerc > coef[i]) {
@@ -137,13 +137,38 @@ class TabulanilSanityData {
     }
     return currTier;
   }
+
+  static _calcInsanityTier(sanPerc, coef) {
+    if (sanPerc === 1.0) {
+      return 0;
+    }
+    let currTier = 0;
+    for (let i = 0; i < coef.length; i++) {
+      if (sanPerc > coef[i]) {
+        break;
+      }
+      currTier = i + 1;
+    }
+    return currTier;
+  }
+
+
+  static updateSanityFlagsForActor(actor, updateData) {
+    const flagPath = `flags.${TabulanilSanity.ID}`;
+    actor.update({ [flagPath]: updateData });
+  }
 }
 
 class TabulanilSanityConfig {
 
+
+  static getTierCoef() {
+    return [0.8, 0.6, 0.4, 0.2, 0.1, 0.0];
+  }
+
   static initializeSanityValuesForActor(actor) {
     TabulanilSanity.log(false, "Initializing module flags")
-    const {cha, int, wis} = actor.system?.abilities;
+    const { cha, int, wis } = actor.system?.abilities;
     const totalSanity = TabulanilSanityData._calcTotalSanity(cha.value, int.value, wis.value);
 
     const actorSan = {
@@ -151,11 +176,46 @@ class TabulanilSanityConfig {
       currSanity: totalSanity,
       insanityTier: 0,
     };
-    const flagPath = `flags.${TabulanilSanity.ID}`;
 
-    actor.update({[flagPath]: actorSan});
+    TabulanilSanityData.updateSanityFlagsForActor(actor, actorSan)
   }
 
+  static _onUpdate(actor, data) {
+    const currSanData = actor.flags?.[TabulanilSanity.ID];
+    const currSan = currSanData?.[TabulanilSanity.FLAGS.CURRENT_SANITY];
+    const totalSan = currSanData?.[TabulanilSanity.FLAGS.SANITY_POOL];
+    const change = data?.value;
+
+    if (!Number.isInteger(change)) {
+      TabulanilSanity.log(false, "change can only be an integer number");
+      return;
+    }
+
+    // Clamp new sanity value to be between 0 and maximum sanity
+    const newSan = Math.max(0, Math.min(currSan + change, totalSan));
+    const sanPerc = newSan / totalSan;
+    const newTier = TabulanilSanityData._calcInsanityTier(sanPerc, this.getTierCoef());
+    const updateData = {
+      ...currSanData,
+      [TabulanilSanity.FLAGS.CURRENT_SANITY]: newSan,
+      [TabulanilSanity.FLAGS.INSANITY_TIER]: newTier,
+    }
+
+    TabulanilSanity.log(false, "update data: ", updateData)
+
+    TabulanilSanityData.updateSanityFlagsForActor(actor, updateData);
+  }
+
+  static _toggleEditHP(event, edit) {
+    const target = event.currentTarget.closest(".sanity-points");
+    const label = target.querySelector(":scope > .label");
+    const input = target.querySelector(":scope > input");
+    label.hidden = edit
+    input.hidden = !edit
+    if (edit) {
+      input.focus();
+    }
+  }
 }
 
 /**
@@ -195,6 +255,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
 
   const insanityTierName = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.shortName`);
   const insanityTierFlavour = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.flavourText`);
+  const currSanityFlag = `flags.${TabulanilSanity.ID}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
   const tooltipRich = `<section class='dnd5e2 content tabulanil-tooltip tabulanil-rule-tooltip'>
     <section class='header'>
         <h2>${insanityTierName}</h2>
@@ -216,7 +277,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
             <span class="separator">/</span>
             <span class="max">${totalSanity}</span>
           </div>
-          <input type="text" name="flags.tabulanil-sanity-dnd5e.currSanity" data-dtype="Number" placeholder="0" value="${currSanity}" hidden="">
+          <input type="text" name="${currSanityFlag}" data-dtype="Number" placeholder="0" value="${currSanity}" hidden="">
         </div>
         <div class="tmp sanity-tier" data-tooltip="${tooltipRich}">
           <span>${currInsanityTier}</span>
@@ -228,6 +289,18 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   if (actorSheetLocation) {
     actorSheetLocation.insertAdjacentHTML("afterend", sanityUI);
   }
+
+  // add event listener to sanity bar
+  const sanityBar = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actor.id} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(5) > div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points`);
+  sanityBar.addEventListener("click", (event) => {
+    TabulanilSanity.log(false, "clicked on sanity bar:", event);
+    TabulanilSanityConfig._toggleEditHP(event, true);
+  });
+  const sanityBarInput = html.querySelector(`#ActorSheet5eCharacter2-Actor-${actor.id} > section > form > section.sheet-body > div > div > div.card > div.stats > div:nth-child(5) > div.meter.sectioned.hit-points.sanity-points > div.progress.hit-points.sanity-points > input[type=text]`);
+  sanityBarInput.addEventListener("blur", (event) => {
+    TabulanilSanity.log(false, "focus out of input", event);
+    TabulanilSanityConfig._toggleEditHP(event, false);
+  });
 });
 
 
@@ -241,7 +314,5 @@ Hooks.on("preUpdateActor", (actor, data, info, id) => {
 
 // Hooks.on("preCreateActor", (actor, actorMeta, actorOps, id) => {
 //   TabulanilSanity.log(false, "New Actor created, populating flags");
-//   TabulanilSanityData.calcTotalSanityForActor(actor);
-//   TabulanilSanityData.updateCurrentInsanityTierForActor(actor);
-//   TabulanilSanityData.updateSanityForActor(actor, TabulanilSanityData.getTotalSanityForActor(actor));
+//   TabulanilSanityConfig.initializeSanityValuesForActor(actor);
 // });
