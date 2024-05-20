@@ -15,9 +15,7 @@ class TabulanilSanity {
   * @type {Object}
   */
   static FLAGS = {
-    SANITY_POOL: "totalSanity",
     CURRENT_SANITY: "currSanity",
-    INSANITY_TIER: "insanityTier",
   }
 
   /**
@@ -56,7 +54,7 @@ class TabulanilSanityData {
   * @returns {number|null} The current Total Sanity Points of the actor if available, or null otherwise
   */
   static getTotalSanityForActor(actor) {
-    return actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL);
+    return this.calcTotalSanityForActor(actor);
   }
   /**
   * Gets the current insanity tier for the specified actor.
@@ -65,7 +63,10 @@ class TabulanilSanityData {
   * @returns {number|null} The current insanity tier of the actor if available, or null otherwise
   */
   static getInsanityTierForActor(actor) {
-    return actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.INSANITY_TIER);
+    const totalSan = this.calcTotalSanityForActor(actor);
+    const currSan = this.getSanityForActor(actor);
+    const sanPerc = currSan/totalSan;
+    return this._calcInsanityTier(sanPerc, TabulanilSanityConfig.getTierCoef());
   }
 
   /**
@@ -96,19 +97,6 @@ class TabulanilSanityData {
     return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
   }
 
-  /**
-  * Updates the insanity tier for a specified actor.
-  *
-  * @param {string} actorId - The unique identifier for the actor whose insanity tier we want to update
-  * @returns {Promise} A Promise that resolves when the actor's Insanity Tier flag is updated.
-  */
-  static updateCurrentInsanityTierForActor(actor) {
-    const currSan = actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
-    const totalSan = TabulanilSanityData.calcTotalSanityForActor(actor);
-    const sanPerc = currSan / totalSan;
-    return this._calcInsanityTier(sanPerc, TabulanilSanityConfig.getTierCoef());
-  }
-
   static _calcInsanityTier(sanPerc, coef) {
     if (sanPerc === 1.0) {
       return 0;
@@ -132,7 +120,6 @@ class TabulanilSanityData {
 
 class TabulanilSanityConfig {
 
-
   static getTierCoef() {
     return [0.8, 0.6, 0.4, 0.2, 0.1, 0.0];
   }
@@ -142,38 +129,10 @@ class TabulanilSanityConfig {
     const totalSanity = TabulanilSanityData.calcTotalSanityForActor(actor);
 
     const actorSan = {
-      totalSanity: totalSanity,
-      currSanity: totalSanity,
-      insanityTier: 0,
+      [TabulanilSanity.FLAGS.CURRENT_SANITY]: totalSanity,
     };
 
     TabulanilSanityData.updateSanityFlagsForActor(actor, actorSan)
-  }
-
-  static _onUpdate(actor, data) {
-    const currSanData = actor.flags?.[TabulanilSanity.ID];
-    const currSan = currSanData?.[TabulanilSanity.FLAGS.CURRENT_SANITY];
-    const totalSan = currSanData?.[TabulanilSanity.FLAGS.SANITY_POOL];
-    const change = data?.value;
-
-    if (!Number.isInteger(change)) {
-      TabulanilSanity.log(false, "change can only be an integer number");
-      return;
-    }
-
-    // Clamp new sanity value to be between 0 and maximum sanity
-    const newSan = Math.max(0, Math.min(currSan + change, totalSan));
-    const sanPerc = newSan / totalSan;
-    const newTier = TabulanilSanityData._calcInsanityTier(sanPerc, this.getTierCoef());
-    const updateData = {
-      ...currSanData,
-      [TabulanilSanity.FLAGS.CURRENT_SANITY]: newSan,
-      [TabulanilSanity.FLAGS.INSANITY_TIER]: newTier,
-    }
-
-    TabulanilSanity.log(false, "update data: ", updateData)
-
-    TabulanilSanityData.updateSanityFlagsForActor(actor, updateData);
   }
 
   static _toggleEditHP(event, edit) {
@@ -210,22 +169,22 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   const actor = app.document;
   TabulanilSanity.log(false, `Opened actor sheet for ${actor.name}`);
 
-  if (!actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.SANITY_POOL)) {
+  if (!actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY)) {
     TabulanilSanity.log(false, `Module flags were not set for actor ${actor.name}(ID: ${actor.id})`);
     TabulanilSanityConfig.initializeSanityValuesForActor(actor);
   }
 
   const totalSanity = TabulanilSanityData.calcTotalSanityForActor(actor);
-  const currSanity = TabulanilSanityData.getSanityForActor(actor);
-  const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actor);
   if (totalSanity <= 0) {
     return;
   }
+  const currSanity = TabulanilSanityData.getSanityForActor(actor);
   const sanPerc = currSanity / totalSanity * 100;
+  const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actor);
 
   const insanityTierName = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.shortName`);
   const insanityTierFlavour = game.i18n.localize(`TABULANIL_SANITY.TIER_${currInsanityTier}.flavourText`);
-  const currSanityFlag = `flags.${TabulanilSanity.ID}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
+  const currSanityFlag = `${TabulanilSanity.flagPath}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
   const tooltipRich = `<section class='dnd5e2 content tabulanil-tooltip tabulanil-rule-tooltip'>
     <section class='header'>
         <h2>${insanityTierName}</h2>
@@ -255,7 +214,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
       </div>
     </div>`
 
-  const actorSheetLocation = html.querySelector("section.sheet-body > div > div > div.card > div.stats > div:nth-child(4)");
+  const actorSheetLocation = html.querySelector("div.stats > div:nth-child(4)");
   if (actorSheetLocation) {
     actorSheetLocation.insertAdjacentHTML("afterend", sanityUI);
   }
@@ -271,17 +230,4 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
     TabulanilSanity.log(false, "focus out of input", event);
     TabulanilSanityConfig._toggleEditHP(event, false);
   });
-});
-
-
-Hooks.on("preUpdateActor", (actor, data, info, id) => {
-  if (data.system?.abilities?.int || data.system?.abilities?.wis || data.system?.abilities?.cha) {
-    TabulanilSanity.log(false, "Mental attributes changed, updating data flags");
-    const flagsUpdate = {
-      [TabulanilSanity.flagPath]: {}
-    }
-    TabulanilSanity.log(false, "update data", flagsUpdate);
-    TabulanilSanityData.calcTotalSanityForActor(actor, data);
-    TabulanilSanityData.updateCurrentInsanityTierForActor(actor);
-  }
 });
