@@ -169,16 +169,23 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   const actor = app.document;
   TabulanilSanity.log(false, `Opened actor sheet for ${actor.name}`);
 
-  if (!actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY)) {
+  let currSanity = TabulanilSanityData.getSanityForActor(actor);
+  if (currSanity === undefined ) {
     TabulanilSanity.log(false, `Module flags were not set for actor ${actor.name}(ID: ${actor.id})`);
     TabulanilSanityConfig.initializeSanityValuesForActor(actor);
   }
 
   const totalSanity = TabulanilSanityData.calcTotalSanityForActor(actor);
   if (totalSanity <= 0) {
+    TabulanilSanity.log(false, "Total Sanity calculated is <= 0, skipping doing nothing...")
     return;
   }
-  const currSanity = TabulanilSanityData.getSanityForActor(actor);
+  if (currSanity > totalSanity || currSanity < 0) {
+    TabulanilSanity.log(false, "Current sanity is out of bounds, clamping between 0 and total sanity")
+    const clampedSan = Math.max(0, Math.min(currSanity, totalSanity));
+    TabulanilSanityData.updateSanityForActor(actor, clampedSan);
+    currSanity = clampedSan;
+  }
   const sanPerc = currSanity / totalSanity * 100;
   const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actor);
 
