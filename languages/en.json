@@ -1,32 +1,40 @@
 {
   "TABULANIL_SANITY": {
-    "TIER_0": {
-      "shortName": "Sane",
-      "flavourText": "You feel ok, your mind seens to be in good condition for now. No effects are noticeble."
+    "insanityTiers": {
+      "TIER_0": {
+        "shortName": "Sane",
+        "flavourText": "You feel ok, your mind seens to be in good condition for now. No effects are noticeble."
+      },
+      "TIER_1": {
+        "shortName": "Distress",
+        "flavourText": "Minor phobias or compulsions start to manifest. Light disadvantage on social interactions and intellectual tasks."
+      },
+      "TIER_2": {
+        "shortName": "Clouded Mind",
+        "flavourText": "Hallucionations and Paranoia begin. You have disadvantage on Wisdom, Intelligence and Charisma based checks."
+      },
+      "TIER_3": {
+        "shortName": "Hallucinatory",
+        "flavourText": "Delusions set in. You begin to hear voices or believe you are someone else. Disadvantage on all ability checks related to mental capabilities. Disadvantage on Dexterity based Saving Throws."
+      },
+      "TIER_4": {
+        "shortName": "Lost Rationality",
+        "flavourText": "Irrationality begins, severe paranoia, phobias and difficult to control yourself. Disadvantage on attack rolls. Disadvantage on concentration checks. Disadvantage agains saving throws against the Frightened condition. You have trouble resting and are only able to receive the benefits of a partial long rest, even if a Long Rest is possible."
+      },
+      "TIER_5": {
+        "shortName": "Eroded Mind",
+        "flavourText": "You become mostly non-functional, reacting unpredictably or remaining catatonic when asked to act. All attacks against you are made with advantage. You are no longer able to concentrate on spells."
+      },
+      "TIER_6": {
+        "shortName": "Complete Madness",
+        "flavourText": "Your mind breaks completely, driven by madness you are no longer yourself. Control was an illusion anyway."
+      }
     },
-    "TIER_1": {
-      "shortName": "Distress",
-      "flavourText": "Minor phobias or compulsions start to manifest. Light disadvantage on social interactions and intellectual tasks."
-    },
-    "TIER_2": {
-      "shortName": "Clouded Mind",
-      "flavourText": "Hallucionations and Paranoia begin. You have disadvantage on Wisdom, Intelligence and Charisma based checks."
-    },
-    "TIER_3": {
-      "shortName": "Hallucinatory",
-      "flavourText": "Delusions set in. You begin to hear voices or believe you are someone else. Disadvantage on all ability checks related to mental capabilities. Disadvantage on Dexterity based Saving Throws."
-    },
-    "TIER_4": {
-      "shortName": "Lost Rationality",
-      "flavourText": "Irrationality begins, severe paranoia, phobias and difficult to control yourself. Disadvantage on attack rolls. Disadvantage on concentration checks. Disadvantage agains saving throws against the Frightened condition. You have trouble resting and are only able to receive the benefits of a partial long rest, even if a Long Rest is possible."
-    },
-    "TIER_5": {
-      "shortName": "Eroded Mind",
-      "flavourText": "You become mostly non-functional, reacting unpredictably or remaining catatonic when asked to act. All attacks against you are made with advantage. You are no longer able to concentrate on spells."
-    },
-    "TIER_6": {
-      "shortName": "Complete Madness",
-      "flavourText": "Your mind breaks completely, driven by madness you are no longer yourself. Control was an illusion anyway."
+    "settings": {
+      "injectButton": {
+        "Name": "Display Sanity Bar on Player Character Sheets?",
+        "Hint": "Controls whether or not the modules SAnitybar is present on the Player Character sheet."
+      }
     }
   }
 }
