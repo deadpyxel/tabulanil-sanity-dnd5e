@@ -10,8 +10,8 @@
   ],
   "url": "https://github.com/deadpyxel/tabulanil-sanity-dnd5e",
   "manifest": "#{MANIFEST}#",
-  "download": "#{DOWNLOAD}#"
-  "version": "0.4.3",
+  "download": "#{DOWNLOAD}#",
+  "version": "#{VERSION}#",
   "relationships": {
     "systems": [
       {
