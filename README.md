@@ -2,8 +2,8 @@
 
 A simple FoundryVTT module to add insanity to your games. Compatible with DnD 5e v3.0 running on FoundryVTT v11.
 
-
-> Note: This module was created with my table's homebrew rules in mind, so general customization was not the initial main goal of this module, while it may be in the future.
+> Note: This module was created with my table's homebrew rules in mind.
+> General customization was not the initial main goal of this module, while it may be in the future.
 
 ## Features
 
@@ -34,7 +34,6 @@ While this module was intended for personal use, there are some things I would l
 - League of Foundry Developers and FoundryVTT discord with troubleshooting and architecture discussion.
 - Call of the Cthulhu TTRPG for inspiration.
 - The players at my table, for bearing with my stupid ideas.
-
 
 ## License
 
