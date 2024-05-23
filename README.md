@@ -11,9 +11,24 @@ A simple FoundryVTT module to add insanity to your games. Compatible with DnD 5e
 - Control current sanity from your actor sheet
 - Live update of values based on changes on Mental attributes
 
+## Compatibility
+
+This module requires:
+
+- FoundryVTT v11
+- DnD5e v3.0.0 and above
+
 ## Installation
 
-WIP
+1. Go to the FoundryVTT setup page and choose **Add-on Modules**
+2. Click on the **Install Module** button
+3. Then you have two options:
+    1. Search for "Tabulanil Sanity" and click install
+    2. Paste the [latest manifest URL][latest_manifest] in the **Manifest Link** input and click install.
+
+All releases can be found on the [Releases](https://github.com/deadpyxel/tabulanil-sanity-dnd5e/releases) page.
+
+It is also possible to download the module ZIP file and decompress it on your own Foundry instance.
 
 ## Documentation
 
@@ -38,3 +53,5 @@ While this module was intended for personal use, there are some things I would l
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+[latest_manifest]: https://github.com/deadpyxel/tabulanil-sanity-dnd5e/releases/latest/download/module.json
