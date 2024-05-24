@@ -2,7 +2,9 @@
 :root {
   --tabulanil-sanity-color-1: #757575;
   --tabulanil-sanity-color-2: #5f5c8f;
-  --tabulanil-sanity-color-3: #48548c;
+  --tabulanil-sanity-color-3: #483D8B;
+  --tabulanil-sanity-color-4: #7A82AB;
+  --tabulanil-sanity-color-5: #240750;
 }
 
 /* sanity bar styles */
@@ -80,4 +82,9 @@
   align-items: center;
   justify-content: space-between;
   margin-block: 6px 10px;
+}
+
+/* tokenHUD UI */
+.tabulanil-bar input {
+  border: 1px solid var(--tabulanil-sanity-color-2);
 }

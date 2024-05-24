@@ -303,3 +303,14 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
     TabulanilSanityConfig._toggleEditHP(event, false);
   });
 });
+
+
+Hooks.on("renderTokenHUD", (app, [html], context) => {
+  const actor = game.actors.get(context.actorId);
+  const currSanity = TabulanilSanityData.getSanityForActor(actor)
+  const currSanityFlag = `${TabulanilSanity.flagPath}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
+  const sanityBar = `<div class="attribute tabulanil-bar"><input type="text" name="${currSanityFlag}" value="${currSanity}"></div>`
+
+  const bar1 = html.querySelector("#token-hud > div.col.middle > div.attribute.bar1");
+  bar1.insertAdjacentHTML("afterend", sanityBar);
+});
