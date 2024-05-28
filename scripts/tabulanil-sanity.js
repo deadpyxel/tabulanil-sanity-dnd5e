@@ -1,19 +1,19 @@
 /**
-  * Class representing the sanity system for the FoundryVTT module
-  */
+ * Class representing the sanity system for the FoundryVTT module
+ */
 class TabulanilSanity {
   /**
-  * The unique identifier for the module
-  * @type {string}
-  */
+   * The unique identifier for the module
+   * @type {string}
+   */
   static ID = "tabulanil-sanity-dnd5e";
 
   static flagPath = `flags.${this.ID}`;
 
   /**
-  * Flags used within the module to maintain state
-  * @type {Object}
-  */
+   * Flags used within the module to maintain state
+   * @type {Object}
+   */
   static FLAGS = {
     CURRENT_SANITY: "currSanity",
   }
@@ -28,10 +28,10 @@ class TabulanilSanity {
   }
 
   /**
-  * Logs messages to the console if the debug mode is active or logging is forced.
-  * @param {boolean} force - Force the function to log regardless of the debug settings
-  * @param {...any} args - Additional arguments to log.
-  */
+   * Logs messages to the console if the debug mode is active or logging is forced.
+   * @param {boolean} force - Force the function to log regardless of the debug settings
+   * @param {...any} args - Additional arguments to log.
+   */
   static log(force, ...args) {
     const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
 
@@ -70,50 +70,50 @@ class TabulanilSanity {
 }
 
 /**
-  * Class responsible for managing sanity data computations for Actors
-  */
+ * Class responsible for managing sanity data computations for Actors
+ */
 class TabulanilSanityData {
 
   /**
-  * Gets the current Sanity points for the specified actor.
-  *
-  * @param {Actor} actor - The actor whose current sanity we want to fetch
-  * @returns {number} The current Sanity Points of the actor if available, or null otherwise
-  */
+   * Gets the current Sanity points for the specified actor.
+   *
+   * @param {Actor} actor - The actor whose current sanity we want to fetch
+   * @returns {number} The current Sanity Points of the actor if available, or null otherwise
+   */
   static getSanityForActor(actor) {
     return actor.getFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY);
   }
 
   /**
-  * Gets the Total Sanity score for the specified actor.
-  *
-  * @param {Actor} actor - The actor whose sanity total we want to fetch
-  * @returns {number} The current Total Sanity Points of the actor if available, or null otherwise
-  */
+   * Gets the Total Sanity score for the specified actor.
+   *
+   * @param {Actor} actor - The actor whose sanity total we want to fetch
+   * @returns {number} The current Total Sanity Points of the actor if available, or null otherwise
+   */
   static getTotalSanityForActor(actor) {
     return this.calcTotalSanityForActor(actor);
   }
 
   /**
-  * Gets the current insanity tier for the specified actor.
-  *
-  * @param {Actor} actor - The actor whose insanity tier we want to query
-  * @returns {number} The current insanity tier of the actor if available, or null otherwise
-  */
+   * Gets the current insanity tier for the specified actor.
+   *
+   * @param {Actor} actor - The actor whose insanity tier we want to query
+   * @returns {number} The current insanity tier of the actor if available, or null otherwise
+   */
   static getInsanityTierForActor(actor) {
     const totalSan = this.calcTotalSanityForActor(actor);
     const currSan = this.getSanityForActor(actor);
-    const sanPerc = currSan/totalSan;
+    const sanPerc = currSan / totalSan;
     return this._calcInsanityTier(sanPerc, TabulanilSanityConfig.getTierCoef());
   }
 
   /**
-  * Calculates the total sanity points for a specified Actor based on their mental ability scores.
-  *
-  * @param {Actor} actor - The actor whose sanity total we want to calculate
-  * @param {Object} [extraData={}] - Optional object containing updated ability scores.
-  * @returns {Promise} A Promise that resolves when the actor's Sanity flag is updated.
-  */
+   * Calculates the total sanity points for a specified Actor based on their mental ability scores.
+   *
+   * @param {Actor} actor - The actor whose sanity total we want to calculate
+   * @param {Object} [extraData={}] - Optional object containing updated ability scores.
+   * @returns {Promise} A Promise that resolves when the actor's Sanity flag is updated.
+   */
   static calcTotalSanityForActor(actor, extraData = {}) {
     const actorAbilities = actor.system.abilities
     // For each of the mental attributes, use the new data if it exists, else fetch the actor's current value
@@ -124,24 +124,24 @@ class TabulanilSanityData {
   }
 
   /**
-  * Updates the sanity score for a specified actor.
-  *
-  * @param {Actor} actor - The actor whose sanity total we want to update
-  * @param {number} value - The value to adjust the actor's sanity to.
-  * @returns {Promise} A Promise that resolves when the actor's Current Sanity flag is updated.
-  */
+   * Updates the sanity score for a specified actor.
+   *
+   * @param {Actor} actor - The actor whose sanity total we want to update
+   * @param {number} value - The value to adjust the actor's sanity to.
+   * @returns {Promise} A Promise that resolves when the actor's Current Sanity flag is updated.
+   */
   static updateSanityForActor(actor, value) {
     TabulanilSanity.log(false, `Setting current sanity for actor ${actor.name} to ${value}`)
     return actor.setFlag(TabulanilSanity.ID, TabulanilSanity.FLAGS.CURRENT_SANITY, value);
   }
 
   /**
-  * Calculates the insanity tier based on the sanity percentage and coefficient values.
-  *
-  * @param {number} sanPerc - The percentage of current sanity to total sanity
-  * @param {number[]} coef - The coefficient values for determining insanity tiers
-  * @returns {number} The calculated insanity tier
-  */
+   * Calculates the insanity tier based on the sanity percentage and coefficient values.
+   *
+   * @param {number} sanPerc - The percentage of current sanity to total sanity
+   * @param {number[]} coef - The coefficient values for determining insanity tiers
+   * @returns {number} The calculated insanity tier
+   */
   static _calcInsanityTier(sanPerc, coef) {
     if (sanPerc === 1.0) {
       return 0;
@@ -156,20 +156,28 @@ class TabulanilSanityData {
     return currTier;
   }
 
+  /**
+   * Clamps the value between 0 and the maximum sanity value for the actor.
+   * @param {number} value - The value to be clamped.
+   * @param {Actor} actor - The actor object.
+   * @returns {number} The clamped value.
+   */
   static _clampValue(value, actor) {
     const maxSan = TabulanilSanityData.getTotalSanityForActor(actor);
     return Math.max(0, Math.min(value, maxSan));
   }
 
   /**
-  * Updates the sanity flags for a specified actor with the provided data.
-  *
-  * @param {Actor} actor - The actor whose sanity flags we want to update
-  * @param {Object} updateData - The data to update the sanity flags with
-  */
+   * Updates the sanity flags for a specified actor with the provided data.
+   *
+   * @param {Actor} actor - The actor whose sanity flags we want to update
+   * @param {Object} updateData - The data to update the sanity flags with
+   */
   static updateSanityFlagsForActor(actor, updateData) {
     const flagPath = `flags.${TabulanilSanity.ID}`;
-    actor.update({ [flagPath]: updateData });
+    actor.update({
+      [flagPath]: updateData
+    });
   }
 }
 
@@ -227,10 +235,12 @@ Hooks.once('init', () => {
 });
 
 /**
-  * Registers a debug flag for the module once the developer mode is ready.
-  * This is useful for enabling or disabling debug output conditionally based on the environment.
-  */
-Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
+ * Registers a debug flag for the module once the developer mode is ready.
+ * This is useful for enabling or disabling debug output conditionally based on the environment.
+ */
+Hooks.once("devModeReady", ({
+  registerPackageDebugFlag
+}) => {
   registerPackageDebugFlag(TabulanilSanity.ID);
 });
 
@@ -253,7 +263,7 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   TabulanilSanity.log(false, `Opened actor sheet for ${actor.name}`);
 
   let currSanity = TabulanilSanityData.getSanityForActor(actor);
-  if (currSanity === undefined ) {
+  if (currSanity === undefined) {
     TabulanilSanity.log(false, `Module flags were not set for actor ${actor.name}(ID: ${actor.id})`);
     TabulanilSanityConfig.initializeSanityValuesForActor(actor);
   }
