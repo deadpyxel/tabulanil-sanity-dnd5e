@@ -9,6 +9,7 @@ A simple FoundryVTT module to add insanity to your games. Compatible with DnD 5e
 
 - Auto calculate total sanity based on mental attributes
 - Control current sanity from your actor sheet
+- Control current sanity from your Token HUD
 - Live update of values based on changes on Mental attributes
 
 ## Compatibility
@@ -38,7 +39,6 @@ WIP
 
 While this module was intended for personal use, there are some things I would like to add in the future:
 
-- Additional ways to control your sanity value without needing the Actor sheet open
 - Compatibility with other Actor sheet types (Legacy Player sheet, Tidy 5e Sheet)
 - Sanity based Rolls
 - Ways to customize the Insanity thresholds
