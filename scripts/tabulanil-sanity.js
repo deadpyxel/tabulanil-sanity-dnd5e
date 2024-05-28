@@ -320,24 +320,24 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
   const actor = game.actors.get(context.actorId);
   const currSanity = TabulanilSanityData.getSanityForActor(actor)
   const currSanityFlag = `${TabulanilSanity.flagPath}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
-  const sanityBar = `<div class="attribute tabulanil-bar"><input type="text" name="${currSanityFlag}" value="${currSanity}"></div>`
+  const sanityBarHTML = `<div class="attribute tabulanil-bar"><input type="text" name="${currSanityFlag}" value="${currSanity}"></div>`
 
   const bar1 = html.querySelector("#token-hud > div.col.middle > div.attribute.bar1");
-  bar1.insertAdjacentHTML("afterend", sanityBar);
+  bar1.insertAdjacentHTML("afterend", sanityBarHTML);
 
-  const sanBar = html.querySelector("div.attribute.tabulanil-bar > input[type=text]");
+  const sanInput = html.querySelector("div.attribute.tabulanil-bar > input[type=text]");
   // select contents on the sanity input
-  sanBar.addEventListener("click", (event) => {
+  sanInput.addEventListener("click", (event) => {
     event.currentTarget.select();
   });
   // unfocus the input on "Submit"
-  sanBar.addEventListener("keydown", (event) => {
+  sanInput.addEventListener("keydown", (event) => {
     if (event.code === "Enter" || event.code === "NumpadEnter") {
       event.currentTarget.blur();
     }
   });
   // listen to focus remove and update current sanity
-  sanBar.addEventListener("focusout", (event) => {
+  sanInput.addEventListener("focusout", (event) => {
     // Acquire string input
     const input = event.currentTarget;
     let strVal = input.value.trim();
