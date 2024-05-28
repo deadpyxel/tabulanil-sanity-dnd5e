@@ -85,6 +85,6 @@
 }
 
 /* tokenHUD UI */
-.tabulanil-bar input {
-  border: 1px solid var(--tabulanil-sanity-color-2);
+.tabulanil-bar input[type="text"] {
+  border: 1px solid var(--tabulanil-sanity-color-4);
 }
