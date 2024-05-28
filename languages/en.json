@@ -33,7 +33,11 @@
     "settings": {
       "injectButton": {
         "Name": "Display Sanity Bar on Player Character Sheets?",
-        "Hint": "Controls whether or not the modules SAnitybar is present on the Player Character sheet."
+        "Hint": "Controls whether or not the module' Sanity bar is present on the Player Character sheet."
+      },
+      "tokenHUDEnable": {
+        "Name": "Display Sanity controls on Token HUD",
+        "Hint": "Controls whether or not sanity controls are available on the Token HUD"
       }
     }
   }

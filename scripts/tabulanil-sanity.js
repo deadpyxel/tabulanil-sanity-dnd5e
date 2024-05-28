@@ -23,7 +23,8 @@ class TabulanilSanity {
    * @type {Object}
    */
   static SETTINGS = {
-    INJECT_BUTTON: "injectButton"
+    INJECT_BUTTON: "injectButton",
+    HUD_ENABLE: "tokenHUDEnable"
   }
 
   /**
@@ -43,6 +44,7 @@ class TabulanilSanity {
    * Initialize module Settings
    */
   static initialize() {
+    // Setting to show Sanity Bar on Actor sheet
     game.settings.register(
       this.ID, this.SETTINGS.INJECT_BUTTON, {
         name: `TABULANIL_SANITY.settings.${this.SETTINGS.INJECT_BUTTON}.Name`, // Setting name
@@ -51,6 +53,17 @@ class TabulanilSanity {
         scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
         config: true, // show on settings page
         hint: `TABULANIL_SANITY.settings.${this.SETTINGS.INJECT_BUTTON}.Hint`, // estra information for setting
+      }
+    );
+    // Setting to show TokenHUD element to control sanity
+    game.settings.register(
+      this.ID, this.SETTINGS.HUD_ENABLE, {
+        name: `TABULANIL_SANITY.settings.${this.SETTINGS.HUD_ENABLE}.Name`, // Setting name
+        default: true, // default value
+        type: Boolean, // Type of setting
+        scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
+        config: true, // show on settings page
+        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.HUD_ENABLE}.Hint`, // estra information for setting
       }
     );
   }
@@ -317,6 +330,10 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
  * @param {Object} context
  */
 Hooks.on("renderTokenHUD", (app, [html], context) => {
+  if (!game.settings.get(TabulanilSanity.ID, TabulanilSanity.SETTINGS.HUD_ENABLE)) {
+    TabulanilSanity.log(false, "Sanity HUD control visibility is off");
+    return;
+  }
   const actor = game.actors.get(context.actorId);
   const currSanity = TabulanilSanityData.getSanityForActor(actor)
   const currSanityFlag = `${TabulanilSanity.flagPath}.${TabulanilSanity.FLAGS.CURRENT_SANITY}`
