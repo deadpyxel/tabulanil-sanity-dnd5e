@@ -143,6 +143,11 @@ class TabulanilSanityData {
     return currTier;
   }
 
+  static _clampValue(value, actor) {
+    const maxSan = TabulanilSanityData.getTotalSanityForActor(actor);
+    return Math.max(0, Math.min(value, maxSan));
+  }
+
   /**
   * Updates the sanity flags for a specified actor with the provided data.
   *
@@ -247,9 +252,8 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
   }
   if (currSanity > totalSanity || currSanity < 0) {
     TabulanilSanity.log(false, "Current sanity is out of bounds, clamping between 0 and total sanity")
-    const clampedSan = Math.max(0, Math.min(currSanity, totalSanity));
-    TabulanilSanityData.updateSanityForActor(actor, clampedSan);
-    currSanity = clampedSan;
+    currSanity = TabulanilSanityData._clampValue(currSanity, actor);
+    TabulanilSanityData.updateSanityForActor(actor, currSanity);
   }
   const sanPerc = currSanity / totalSanity * 100;
   const currInsanityTier = TabulanilSanityData.getInsanityTierForActor(actor);
@@ -305,6 +309,13 @@ Hooks.on("renderActorSheet5eCharacter", (app, [html], data) => {
 });
 
 
+/** Hook that adds the Sanity controls to the TokenHUD
+ * Can be disabled in module settings.
+ *
+ * @param {TokenHUD} app
+ * @param {JQuery} html
+ * @param {Object} context
+ */
 Hooks.on("renderTokenHUD", (app, [html], context) => {
   const actor = game.actors.get(context.actorId);
   const currSanity = TabulanilSanityData.getSanityForActor(actor)
@@ -313,4 +324,37 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
 
   const bar1 = html.querySelector("#token-hud > div.col.middle > div.attribute.bar1");
   bar1.insertAdjacentHTML("afterend", sanityBar);
+
+  const sanBar = html.querySelector("div.attribute.tabulanil-bar > input[type=text]");
+  // select contents on the sanity input
+  sanBar.addEventListener("click", (event) => {
+    event.currentTarget.select();
+  });
+  // unfocus the input on "Submit"
+  sanBar.addEventListener("keydown", (event) => {
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
+      event.currentTarget.blur();
+    }
+  });
+  // listen to focus remove and update current sanity
+  sanBar.addEventListener("focusout", (event) => {
+    // Acquire string input
+    const input = event.currentTarget;
+    let strVal = input.value.trim();
+    // IF we are using a delta style input
+    let isDelta = strVal.startsWith("+") || strVal.startsWith("-");
+    if (strVal.startsWith("=")) strVal = strVal.slice(1);
+    // Evaluate value as number
+    let value = Number(strVal);
+
+    let currSanity = TabulanilSanityData.getSanityForActor(actor);
+    currSanity = isDelta ? currSanity + value : value;
+    currSanity = TabulanilSanityData._clampValue(currSanity, actor);
+
+    const actorSan = {
+      [TabulanilSanity.FLAGS.CURRENT_SANITY]: currSanity,
+    };
+
+    TabulanilSanityData.updateSanityFlagsForActor(actor, actorSan);
+  });
 });
