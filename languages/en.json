@@ -30,6 +30,7 @@
         "flavourText": "Your mind breaks completely, driven by madness you are no longer yourself. Control was an illusion anyway."
       }
     },
+    "moduleSpeaker": "Voice from Beyond",
     "settings": {
       "injectButton": {
         "Name": "Display Sanity Bar on Player Character Sheets?",

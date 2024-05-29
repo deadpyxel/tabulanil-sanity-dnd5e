@@ -19,6 +19,22 @@ class TabulanilSanity {
   }
 
   /**
+   * Mapping of custom Hooks for the modules
+   * @type {Object}
+   */
+  static HOOKS = {
+    INSANITY_CHANGE: `${this.ID}.insanityTierChanged`,
+  }
+
+  /**
+   * Mapping of templates used in the module
+   * @type {Object}
+   */
+  static TEMPLATES = {
+    CHAT_MESSAGE: `modules/${this.ID}/templates/chat-card.hbs`
+  }
+
+  /**
    * Settings used within the module.
    * @type {Object}
    */
@@ -171,13 +187,18 @@ class TabulanilSanityData {
    * Updates the sanity flags for a specified actor with the provided data.
    *
    * @param {Actor} actor - The actor whose sanity flags we want to update
-   * @param {Object} updateData - The data to update the sanity flags with
+   * @param {Object} updateData - The data to update the actor flags with
    */
-  static updateSanityFlagsForActor(actor, updateData) {
-    const flagPath = `flags.${TabulanilSanity.ID}`;
-    actor.update({
-      [flagPath]: updateData
+  static async updateSanityFlagsForActor(actor, updateData) {
+    const prevTier = TabulanilSanityData.getInsanityTierForActor(actor)
+    await actor.update({
+      [TabulanilSanity.flagPath]: updateData
     });
+    const newTier = TabulanilSanityData.getInsanityTierForActor(actor)
+    // Trigger a custom Hook in case there was a change in the insanity tier
+    if (prevTier != newTier) {
+      Hooks.callAll(TabulanilSanity.HOOKS.INSANITY_CHANGE, {prevTier, newTier}, actor)
+    }
   }
 }
 
@@ -384,4 +405,44 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
 
     TabulanilSanityData.updateSanityFlagsForActor(actor, actorSan);
   });
+});
+
+/**
+ * Handle the event when the insanity tier changes for an actor.
+ * @param {object} insanityChanges - The changes in insanity tier.
+ * @param {Actor} actor - The actor whose insanity tier changed.
+ */
+Hooks.on(TabulanilSanity.HOOKS.INSANITY_CHANGE, (insanityChanges, actor) => {
+  TabulanilSanity.log(false, "Insanity tier changed");
+  const {newTier, prevTier} = insanityChanges;
+
+  /**
+   * Async wrapper to post a message in the chat.
+   * @param {object} data - The data to be posted in the chat message.
+   */
+  const postMessage = async (data) => {
+    await getDocumentClass("ChatMessage").create({
+      // render chat message using custom template
+      content: await renderTemplate(TabulanilSanity.TEMPLATES.CHAT_MESSAGE, data),
+      // whisper message to owners of the actor
+      // TODO: control this using a setting (allow for public posting)
+      whisper: game.users.filter(u => actor.testUserPermission(u, "OWNER")).map(u => u.id),
+      // Change speaker field
+      speaker: ChatMessage.implementation.getSpeaker({
+        actor: actor,
+        alias: game.i18n.localize("TABULANIL_SANITY.moduleSpeaker")
+      })
+    });
+  };
+
+  const insanityTierName = game.i18n.localize(`TABULANIL_SANITY.insanityTiers.TIER_${newTier}.shortName`);
+  const insanityTierFlavour = game.i18n.localize(`TABULANIL_SANITY.insanityTiers.TIER_${newTier}.flavourText`);
+  const msgData = {
+    description: insanityTierFlavour,
+    iconURL: `modules/${TabulanilSanity.ID}/assets/icon.svg`,
+    note: `<i>Insanity Tier for <b>${actor.name}</b> changed from <b>${prevTier}</b> to <b>${newTier}</b></i>`,
+    title: `TIER ${newTier} - ${insanityTierName}`,
+  }
+
+  postMessage(msgData);
 });
