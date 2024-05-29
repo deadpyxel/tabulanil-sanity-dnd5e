@@ -8,6 +8,10 @@ class TabulanilSanity {
    */
   static ID = "tabulanil-sanity-dnd5e";
 
+  /**
+   * Static flag path for the module
+   * @type {string}
+   */
   static flagPath = `flags.${this.ID}`;
 
   /**
@@ -197,7 +201,10 @@ class TabulanilSanityData {
     const newTier = TabulanilSanityData.getInsanityTierForActor(actor)
     // Trigger a custom Hook in case there was a change in the insanity tier
     if (prevTier != newTier) {
-      Hooks.callAll(TabulanilSanity.HOOKS.INSANITY_CHANGE, {prevTier, newTier}, actor)
+      Hooks.callAll(TabulanilSanity.HOOKS.INSANITY_CHANGE, {
+        prevTier,
+        newTier
+      }, actor)
     }
   }
 }
@@ -414,7 +421,10 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
  */
 Hooks.on(TabulanilSanity.HOOKS.INSANITY_CHANGE, (insanityChanges, actor) => {
   TabulanilSanity.log(false, "Insanity tier changed");
-  const {newTier, prevTier} = insanityChanges;
+  const {
+    newTier,
+    prevTier
+  } = insanityChanges;
 
   /**
    * Async wrapper to post a message in the chat.
