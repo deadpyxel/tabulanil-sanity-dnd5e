@@ -5,6 +5,14 @@
   --tabulanil-sanity-color-3: #483D8B;
   --tabulanil-sanity-color-4: #7A82AB;
   --tabulanil-sanity-color-5: #240750;
+  /* New color palette https://lospec.com/palette-list/cryptic-ocean */
+  --tabulanil-sanity-color-6: #2a173b;
+  --tabulanil-sanity-color-7: #3f2c5f;
+  --tabulanil-sanity-color-8: #443f7b;
+  --tabulanil-sanity-color-9: #4c5c87;
+  --tabulanil-sanity-color-10: #69809e;
+  --tabulanil-sanity-color-11: #95c5ac;
+  /* Check out https://lospec.com/palette-list/lovecraftian-lens */
 }
 
 /* sanity bar styles */
