@@ -44,7 +44,8 @@ class TabulanilSanity {
    */
   static SETTINGS = {
     INJECT_BUTTON: "injectButton",
-    HUD_ENABLE: "tokenHUDEnable"
+    HUD_ENABLE: "tokenHUDEnable",
+    PUBLIC_NOTIFICATION: "publicSanMsg",
   }
 
   /**
@@ -61,10 +62,10 @@ class TabulanilSanity {
   }
 
   /**
-   * Initialize module Settings
+   * Register the settings for the module
    */
-  static initialize() {
-    // Setting to show Sanity Bar on Actor sheet
+  static registerSettings() {
+    // Setting to show Sanity Bar on Actor sheet, defaults to true
     game.settings.register(
       this.ID, this.SETTINGS.INJECT_BUTTON, {
         name: `TABULANIL_SANITY.settings.${this.SETTINGS.INJECT_BUTTON}.Name`, // Setting name
@@ -72,10 +73,10 @@ class TabulanilSanity {
         type: Boolean, // Type of setting
         scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
         config: true, // show on settings page
-        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.INJECT_BUTTON}.Hint`, // estra information for setting
+        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.INJECT_BUTTON}.Hint`, // extra information for setting
       }
     );
-    // Setting to show TokenHUD element to control sanity
+    // Setting to show TokenHUD element to control sanity, defaults to true
     game.settings.register(
       this.ID, this.SETTINGS.HUD_ENABLE, {
         name: `TABULANIL_SANITY.settings.${this.SETTINGS.HUD_ENABLE}.Name`, // Setting name
@@ -83,9 +84,27 @@ class TabulanilSanity {
         type: Boolean, // Type of setting
         scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
         config: true, // show on settings page
-        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.HUD_ENABLE}.Hint`, // estra information for setting
+        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.HUD_ENABLE}.Hint`, // extra information for setting
       }
     );
+    // Setting to show insanity Tier messages in public chat, defaults to whisper.
+    game.settings.register(
+      this.ID, this.SETTINGS.PUBLIC_NOTIFICATION, {
+        name: `TABULANIL_SANITY.settings.${this.SETTINGS.PUBLIC_NOTIFICATION}.Name`, // Setting name
+        default: false, // default value
+        type: Boolean, // Type of setting
+        scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
+        config: true, // show on settings page
+        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.PUBLIC_NOTIFICATION}.Hint`, // extra information for setting
+      }
+    );
+  }
+
+  /**
+   * Initialize module Settings
+   */
+  static initialize() {
+    this.registerSettings();
   }
 }
 
@@ -431,18 +450,23 @@ Hooks.on(TabulanilSanity.HOOKS.INSANITY_CHANGE, (insanityChanges, actor) => {
    * @param {object} data - The data to be posted in the chat message.
    */
   const postMessage = async (data) => {
-    await getDocumentClass("ChatMessage").create({
+    const messageData = {
       // render chat message using custom template
       content: await renderTemplate(TabulanilSanity.TEMPLATES.CHAT_MESSAGE, data),
-      // whisper message to owners of the actor
-      // TODO: control this using a setting (allow for public posting)
-      whisper: game.users.filter(u => actor.testUserPermission(u, "OWNER")).map(u => u.id),
       // Change speaker field
       speaker: ChatMessage.implementation.getSpeaker({
         actor: actor,
         alias: game.i18n.localize("TABULANIL_SANITY.moduleSpeaker")
       })
-    });
+    }
+    if (!game.settings.get(TabulanilSanity.ID, TabulanilSanity.SETTINGS.PUBLIC_NOTIFICATION)) {
+      TabulanilSanity.log(false, "Insanity Tier changes are set to public");
+      // whisper message to owners of the actor
+      // TODO: control this using a setting (allow for public posting)
+      messageData.whisper = game.users.filter(u => actor.testUserPermission(u, "OWNER")).map(u => u.id)
+    }
+
+    await getDocumentClass("ChatMessage").create(messageData);
   };
 
   const insanityTierName = game.i18n.localize(`TABULANIL_SANITY.insanityTiers.TIER_${newTier}.shortName`);

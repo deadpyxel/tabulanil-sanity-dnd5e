@@ -36,6 +36,10 @@
         "Name": "Display Sanity Bar on Player Character Sheets?",
         "Hint": "Controls whether or not the module's Sanity bar is present on the Player Character sheet."
       },
+      "publicSanMsg": {
+        "Name": "Show Insanity Tier changes in public chat",
+        "Hint": "Controls wether the insanity tier notification on chat should be visible to all or only to the GMa nd the actor owner"
+      },
       "tokenHUDEnable": {
         "Name": "Display Sanity controls on Token HUD",
         "Hint": "Controls whether or not sanity controls are available on the Token HUD"
