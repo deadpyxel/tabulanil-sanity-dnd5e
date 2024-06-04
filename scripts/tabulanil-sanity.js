@@ -424,6 +424,9 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
     let currSanity = TabulanilSanityData.getSanityForActor(actor);
     currSanity = isDelta ? currSanity + value : value;
     currSanity = TabulanilSanityData._clampValue(currSanity, actor);
+    // Update input value to match clamped value if there was need
+    // TODO: Conditionally do this if becomes a performance hit
+    input.value = currSanity;
 
     const actorSan = {
       [TabulanilSanity.FLAGS.CURRENT_SANITY]: currSanity,
@@ -459,10 +462,10 @@ Hooks.on(TabulanilSanity.HOOKS.INSANITY_CHANGE, (insanityChanges, actor) => {
         alias: game.i18n.localize("TABULANIL_SANITY.moduleSpeaker")
       })
     }
+    // If message notification are set to not set to public we use whispers instead
     if (!game.settings.get(TabulanilSanity.ID, TabulanilSanity.SETTINGS.PUBLIC_NOTIFICATION)) {
       TabulanilSanity.log(false, "Insanity Tier changes are set to public");
       // whisper message to owners of the actor
-      // TODO: control this using a setting (allow for public posting)
       messageData.whisper = game.users.filter(u => actor.testUserPermission(u, "OWNER")).map(u => u.id)
     }
 

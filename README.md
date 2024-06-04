@@ -17,8 +17,8 @@ A simple FoundryVTT module to add insanity to your games. Compatible with DnD 5e
 
 This module requires:
 
-- FoundryVTT v11
-- DnD5e v3.0.0 and above
+- FoundryVTT v11+ (Verified to work on v12.315)
+- DnD5e v3.0.0 and above (Verified to work on v3.2.0)
 
 ## Installation
 
@@ -41,7 +41,6 @@ WIP
 While this module was intended for personal use, there are some things I would like to add in the future:
 
 - Recovery of sanity on Rest
-- Migration to FoundryVTT v12
 - Compatibility with other Actor sheet types (Legacy Player sheet, Tidy 5e Sheet)
 - Sanity based Rolls
 - Ways to customize the Insanity thresholds
