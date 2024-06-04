@@ -424,6 +424,9 @@ Hooks.on("renderTokenHUD", (app, [html], context) => {
     let currSanity = TabulanilSanityData.getSanityForActor(actor);
     currSanity = isDelta ? currSanity + value : value;
     currSanity = TabulanilSanityData._clampValue(currSanity, actor);
+    // Update input value to match clamped value if there was need
+    // TODO: Conditionally do this if becomes a performance hit
+    input.value = currSanity;
 
     const actorSan = {
       [TabulanilSanity.FLAGS.CURRENT_SANITY]: currSanity,
