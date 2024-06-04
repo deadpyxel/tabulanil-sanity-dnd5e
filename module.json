@@ -34,8 +34,8 @@
     "minimum": "11",
     "verified": "12.325"
   },
-  "scripts": [
-    "scripts/tabulanil-sanity.js"
+  "esmodules": [
+    "modules/tabulanil-sanity.js"
   ],
   "languages": [
     {
