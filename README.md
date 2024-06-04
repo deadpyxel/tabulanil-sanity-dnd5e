@@ -50,7 +50,9 @@ While this module was intended for personal use, there are some things I would l
 
 - League of Foundry Developers and FoundryVTT discord with troubleshooting and architecture discussion.
 - Call of the Cthulhu TTRPG for inspiration.
+- Darkest Dungeon for inspiration.
 - The players at my table, for bearing with my stupid ideas.
+- [Iron Crown Icon](https://icons8/icon/MV4yTS1xMCU2/darkest-dungeon) by [Icons8](https://icons8.com)
 
 ## License
 
