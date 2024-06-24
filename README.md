@@ -2,8 +2,10 @@
 
 A simple FoundryVTT module to add insanity to your games. Compatible with DnD 5e v3.0 running on FoundryVTT v11.
 
-> Note: This module was created with my table's homebrew rules in mind.
-> General customization was not the initial main goal of this module, while it may be in the future.
+> [!IMPORTANT]
+> This module was created with my table's homebrew rules in mind.
+> General customization was not the initial main goal of this module, and while it may be in the future,
+> some things were created from internal discussion and may need to be adapted for use at your games.
 
 ## Features
 
