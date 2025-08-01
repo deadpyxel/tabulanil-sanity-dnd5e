@@ -43,6 +43,10 @@
       "tokenHUDEnable": {
         "Name": "Display Sanity controls on Token HUD",
         "Hint": "Controls whether or not sanity controls are available on the Token HUD"
+      },
+      "debugMode": {
+        "Name": "Enable Debug Mode",
+        "Hint": "Enables debug logging to the console for troubleshooting module issues"
       }
     }
   }
