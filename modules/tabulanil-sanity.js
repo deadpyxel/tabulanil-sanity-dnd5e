@@ -46,6 +46,7 @@ class TabulanilSanity {
     INJECT_BUTTON: "injectButton",
     HUD_ENABLE: "tokenHUDEnable",
     PUBLIC_NOTIFICATION: "publicSanMsg",
+    DEBUG_MODE: "debugMode",
   }
 
   /**
@@ -54,7 +55,9 @@ class TabulanilSanity {
    * @param {...any} args - Additional arguments to log.
    */
   static log(force, ...args) {
-    const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
+    const shouldLog = force ||
+      game.settings.get(this.ID, this.SETTINGS.DEBUG_MODE) ||
+      game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
 
     if (shouldLog) {
       console.log(this.ID, '|', ...args);
@@ -96,6 +99,17 @@ class TabulanilSanity {
         scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
         config: true, // show on settings page
         hint: `TABULANIL_SANITY.settings.${this.SETTINGS.PUBLIC_NOTIFICATION}.Hint`, // extra information for setting
+      }
+    );
+    // Setting to enable debug mode logging, defaults to false
+    game.settings.register(
+      this.ID, this.SETTINGS.DEBUG_MODE, {
+        name: `TABULANIL_SANITY.settings.${this.SETTINGS.DEBUG_MODE}.Name`, // Setting name
+        default: false, // default value
+        type: Boolean, // Type of setting
+        scope: "world", // scope of setting, either world (only changed by GM) or client (changeable by player, client only)
+        config: true, // show on settings page
+        hint: `TABULANIL_SANITY.settings.${this.SETTINGS.DEBUG_MODE}.Hint`, // extra information for setting
       }
     );
   }
