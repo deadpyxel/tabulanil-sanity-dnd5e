@@ -15,7 +15,7 @@
   /* Check out https://lospec.com/palette-list/lovecraftian-lens */
 }
 
-/* sanity bar styles */
+/* sanity bar styles  10 - 7*/
 .sanity-points::before {
   background: linear-gradient(
     to right,
@@ -35,7 +35,7 @@
 
 /* sanity tier styles */
 .sanity-tier > * {
-  color: var(--tabulanil-sanity-color-2) !important;
+  color: var(--tabulanil-sanity-color-11) !important;
   align-items: center;
   transform: translateX(34%);
 }

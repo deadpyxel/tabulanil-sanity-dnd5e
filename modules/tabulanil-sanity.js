@@ -35,7 +35,8 @@ class TabulanilSanity {
    * @type {Object}
    */
   static TEMPLATES = {
-    CHAT_MESSAGE: `modules/${this.ID}/templates/chat-card.hbs`
+    CHAT_MESSAGE: `modules/${this.ID}/templates/chat-card.hbs`,
+    REST_RECOVERY: `modules/${this.ID}/templates/rest-recovery.hbs`
   }
 
   /**
@@ -270,6 +271,30 @@ class TabulanilSanityConfig {
     input.hidden = !edit;
     if (edit) {
       input.focus();
+    }
+  }
+}
+
+
+class TabulanilSanityRestConfig extends FormApplication {
+  static get defaultOptions() {
+    const defaults = super.defaultOptions;
+
+    const overrides = {
+      height: "auto",
+      id: `${TabulanilSanity.ID}-rest-recovery`,
+      template: TabulanilSanity.TEMPLATES.REST_RECOVERY,
+      title: "Sanity Recovery",
+    }
+
+    const mergedOptions = foundry.utils.mergedObject(defaults, overrides);
+
+    return mergedOptions;
+  }
+
+  getData(options) {
+    return {
+      recoveryBonus: 0,
     }
   }
 }

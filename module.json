@@ -46,5 +46,18 @@
   ],
   "styles": [
     "styles/tabulanil-sanity.css"
+  ],
+  "packs": [
+    {
+      "name": "tabulanil-sanity-rules",
+      "label": "Tabulanil Sanity Rules",
+      "path": "packs/tabulanil-sanity-rules",
+      "type": "JournalEntry",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e"
+    }
   ]
 }
